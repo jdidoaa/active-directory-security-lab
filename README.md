@@ -56,6 +56,16 @@ Ce projet a pour but de démontrer une compréhension complète du cycle de séc
 | Kerberoasting |  Réussie |  Non (mot de passe robuste) | Politique de mot de passe |
 | AS-REP Roasting |  Réussie |  Non (mot de passe robuste) | Pré-authentification réactivée |
 
+##  Analyse des résultats
+
+**Kerberoasting**
+
+Le compte de service `svc-sql`, configuré avec un SPN, s'est révélé vulnérable au Kerberoasting (extraction réussie du ticket Kerberos chiffré depuis un compte utilisateur standard, sans privilège élevé). Cependant, la tentative de cassage du mot de passe via Hashcat, avec la wordlist complète rockyou.txt (14+ millions d'entrées), n'a abouti à aucun résultat, démontrant l'efficacité de la politique de mot de passe robuste (14+ caractères, complexité) appliquée au domaine, même face à cette attaque.
+
+**AS-REP Roasting**
+
+Le compte `y.karim`, configuré volontairement avec la pré-authentification Kerberos désactivée, a permis l'extraction d'un hash sans aucun identifiant valide, illustrant qu'un attaquant externe pourrait exploiter cette faille sans jamais être authentifié. Comme pour le Kerberoasting, le cassage du mot de passe a échoué face à Hashcat. La contre-mesure (réactivation de la pré-authentification) a ensuite été appliquée et vérifiée efficace : une nouvelle tentative d'attaque a été bloquée avec succès.
+
 ##  Outils utilisés
 
 Windows Server 2022 · Active Directory · Group Policy · LAPS · Kali Linux · Impacket · Hashcat · VMware Workstation
