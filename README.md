@@ -56,18 +56,42 @@ Activation de l'audit sur la validation des identifiants et les connexions/déco
 ### 3. Simulation d'attaques
 
 **Kerberoasting**
-- Création d'un compte de service avec SPN (`svc-sql`)
-- Extraction du ticket Kerberos depuis un compte utilisateur standard (sans privilège élevé), via Impacket depuis Kali
-- Tentative de cassage avec Hashcat sur la wordlist complète rockyou.txt (14M+ entrées) : **mot de passe non compromis**
+
+Création d'un compte de service avec SPN (`svc-sql`), puis extraction du ticket Kerberos depuis un compte utilisateur standard (sans privilège élevé), via Impacket depuis Kali.
+
+![Hash Kerberoasting extrait](screenshots/screenshots/07-kerberoasting-hash.png)
+
+Tentative de cassage avec Hashcat sur la wordlist complète rockyou.txt (14M+ entrées) :
+
+![Résultat Hashcat Kerberoasting 1](screenshots/screenshots/08-1-hashcat-kerberoasting-result.png)
+![Résultat Hashcat Kerberoasting 2](screenshots/screenshots/08-2-hashcat-kerberoasting-result.png)
+![Résultat Hashcat Kerberoasting 3](screenshots/screenshots/08-3-hashcat-kerberoasting-result.png)
+
+**Mot de passe non compromis**, malgré 14 millions de tentatives.
 
 **AS-REP Roasting**
-- Création d'un compte avec pré-authentification Kerberos désactivée
-- Extraction du hash **sans aucun identifiant valide**
-- Tentative de cassage avec Hashcat : **mot de passe non compromis**
-- **Contre-mesure appliquée** : réactivation de la pré-authentification, ré-attaque testée et confirmée bloquée
+
+Création d'un compte (`y.karim`) avec la pré-authentification Kerberos désactivée, permettant l'extraction d'un hash **sans aucun identifiant valide**.
+
+![Compte vulnérable à l'AS-REP Roasting](screenshots/screenshots/10-asrep-vulnerability-hash.png)
+![Hash AS-REP Roasting extrait](screenshots/screenshots/09-asrep-roasting-hash.png)
+
+Tentative de cassage avec Hashcat :
+
+![Résultat Hashcat AS-REP Roasting](screenshots/screenshots/11-hashcat-asrep-result.png)
+
+**Mot de passe non compromis.**
+
+**Contre-mesure appliquée** : réactivation de la pré-authentification sur `y.karim`, puis vérification qu'une nouvelle tentative d'attaque est bien bloquée.
+
+![Contre-mesure appliquée et vérifiée 1](screenshots/screenshots/12-1-contremesure-bloquee.png)
+![Contre-mesure appliquée et vérifiée 2](screenshots/screenshots/12-2-contremesure-bloquee.png)
 
 ### 4. Détection
-- Vérification des traces des deux attaques dans l'Observateur d'événements Windows (Event ID 4768, 4769)
+
+Vérification des traces des deux attaques dans l'Observateur d'événements Windows (Event ID 4768, 4769).
+
+![Logs dans l'Observateur d'événements](screenshots/screenshots/13-event-viewer-logs.png)
 
 ##  Résultats
 
@@ -96,3 +120,15 @@ Windows Server 2022 · Active Directory · Group Policy · LAPS · Kali Linux ·
 - Compréhension des vecteurs d'attaque courants sur Kerberos et leur exploitation réelle
 - Mise en œuvre de mesures de durcissement alignées avec les bonnes pratiques (LAPS, politique de mot de passe, audit)
 - Démarche complète d'un audit de sécurité : attaque → détection → correction → vérification
+
+## 🚀 Prochaines étapes
+
+Ce projet s'inscrit dans une série de labos personnels autour des réseaux et de la cybersécurité :
+- **Mini SOC avec Wazuh** : détection en temps réel des attaques simulées dans ce labo
+- **Réseau d'entreprise segmenté avec pfSense** : VLAN, DMZ, VPN
+
+## 📫 Contact
+
+**Doaa Jdi** — Étudiante en Master Réseaux & Télécommunications, à la recherche d'un stage PFE en Réseaux / Cybersécurité
+- LinkedIn : [ton lien LinkedIn]
+- Email : jdidoaa53@gmail.com
