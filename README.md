@@ -20,6 +20,8 @@ Ce projet a pour but de démontrer une compréhension complète du cycle de séc
 - Unités d'Organisation : `LAB_Employees`, `LAB_Computers`, `LAB_Groups`
 - Utilisateurs et comptes de service créés pour simuler un environnement d'entreprise réaliste
 
+![Structure Active Directory](screenshots/screenshots/01-structure-ad.PNG)
+
 ##  Étapes réalisées
 
 ### 1. Déploiement de l'infrastructure
@@ -28,17 +30,35 @@ Ce projet a pour but de démontrer une compréhension complète du cycle de séc
 - Jonction d'un poste client Windows 10 au domaine
 
 ### 2. Durcissement de la sécurité
+
+**Politique de mot de passe et SMBv1**
 - Politique de mot de passe renforcée (longueur, complexité)
 - Désactivation de SMBv1
-- **LAPS** (Local Administrator Password Solution) : mots de passe administrateur locaux uniques et automatiquement renouvelés par machine
-- Audit des connexions activé (Logon/Logoff, validation des identifiants)
+
+![SMBv1 désactivé](screenshots/screenshots/02-smbv1-desactive.PNG)
+
+**LAPS (Local Administrator Password Solution)**
+
+Mise en place de mots de passe administrateur locaux uniques et automatiquement renouvelés par machine :
+- Extension du schéma Active Directory et délégation des permissions sur l'OU `LAB_Computers`
+- Configuration via GPO dédiée
+
+![Schéma AD étendu et permissions déléguées](screenshots/screenshots/04-laps-schema-et-permissions.png)
+![GPO LAPS](screenshots/screenshots/03-gpo-laps-policy.png)
+![Mot de passe LAPS généré](screenshots/screenshots/05-laps-password.png)
+
+**Audit des connexions**
+
+Activation de l'audit sur la validation des identifiants et les connexions/déconnexions, via une GPO liée à l'OU `LAB_Computers`.
+
+![Configuration de la politique d'audit](screenshots/screenshots/06-audit-policy-configuration.png)
 
 ### 3. Simulation d'attaques
 
 **Kerberoasting**
 - Création d'un compte de service avec SPN (`svc-sql`)
 - Extraction du ticket Kerberos depuis un compte utilisateur standard (sans privilège élevé), via Impacket depuis Kali
-- Tentative de cassage avec Hashcat sur la wordlist complète rockyou.txt (14M+ entrées) : **mot de passe non compromis**, grâce à la politique de mot de passe appliquée
+- Tentative de cassage avec Hashcat sur la wordlist complète rockyou.txt (14M+ entrées) : **mot de passe non compromis**
 
 **AS-REP Roasting**
 - Création d'un compte avec pré-authentification Kerberos désactivée
